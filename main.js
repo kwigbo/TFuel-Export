@@ -62,6 +62,10 @@ function getNextDaysTransactions() {
 			tomorrowDate.setDate(currentDate.getDate() + 1);
 			getNextDaysTransactions();
 		}
+		request.onerror = function () {
+			console.log("Failure to load. Try that page again.");
+			request.send();
+		};
 	} else {
 		var output_header = document.getElementById('output_header');
 		output_header.innerHTML = "Complete!";
@@ -93,9 +97,9 @@ function addDailyRecord(json, date) {
 	// Fields here are specific output for cointracker.io
 	var finalItem = {
 		"Date": timestampString(date), 
-		"Received Quantity": totalTFuel,
+		"Received Quantity": totalTFuel.toFixed(8),
 		"Received Currency": "TFUEL",
-		"Sent Quantity": 0,
+		"Sent Quantity": "",
 		"Sent Currency": "",
 		"Fee Amount": "",
 		"Fee Currency": "",
