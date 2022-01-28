@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>TFuel Earnings</title>
+    <style>
+      #loader { display:none; }
+      body { }
+      #container { width:50%; margin: auto; text-align: center; }
+      img {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+      }
+    </style>
+  </head>
+  <body>
+      <div id="container">
+      <form id="form" name="tfuelForm" action="" method="GET">
+        Enter your public address: <br>
+        <input type="text" id="address_input" name="address_input" value=""><p>
+        Enter the year for export: <br>
+        <input type="text" id="year_input" name="year_input" value=""><p>
+        <input type="button" name="button" value="Generate" onClick="generate(this.form)">
+      </form>
+      <img id="loader" src="spinner.gif" />
+      <H2 id="output_header"></H2>
+      <H2 id="output"></H2>
+      <a href="http://icons8.com">icons8.com</a>
+    </div>
+    <script src="main.js"></script>
+  </body>
+</html>
