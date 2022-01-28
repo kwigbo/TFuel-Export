@@ -56,7 +56,7 @@ function getNextDaysTransactions() {
 			var json = request.response
 			addDailyRecord(json, currentDate);
 
-			// Execute Get with current date and tomorrow date
+			// Update to tommorrow and get the next days transactions
 			currentDate = tomorrowDate;
 			tomorrowDate = new Date(currentDate.valueOf());
 			tomorrowDate.setDate(currentDate.getDate() + 1);
@@ -64,7 +64,7 @@ function getNextDaysTransactions() {
 		}
 		request.onerror = function () {
 			console.log("Failure to load. Try that page again.");
-			request.send();
+			getNextDaysTransactions();
 		};
 	} else {
 		var output_header = document.getElementById('output_header');
@@ -94,18 +94,20 @@ function addDailyRecord(json, date) {
 			totalTFuel += tfuelAmount;
 		}
 	}
-	// Fields here are specific output for cointracker.io
-	var finalItem = {
-		"Date": timestampString(date), 
-		"Received Quantity": totalTFuel.toFixed(8),
-		"Received Currency": "TFUEL",
-		"Sent Quantity": "",
-		"Sent Currency": "",
-		"Fee Amount": "",
-		"Fee Currency": "",
-		"Tag": "staked",
-	};
-	finalOutputItems.push(finalItem);
+	if (totalTFuel > 0) {
+		// Fields here are specific output for cointracker.io
+		var finalItem = {
+			"Date": timestampString(date), 
+			"Received Quantity": totalTFuel.toFixed(8),
+			"Received Currency": "TFUEL",
+			"Sent Quantity": "",
+			"Sent Currency": "",
+			"Fee Amount": "",
+			"Fee Currency": "",
+			"Tag": "staked",
+		};
+		finalOutputItems.push(finalItem);
+	}
 }
 
 function timestampString(date) {
