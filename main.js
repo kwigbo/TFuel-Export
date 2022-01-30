@@ -2,6 +2,7 @@ var startDate;
 var currentDate;
 var tomorrowDate;
 var finalOutputItems;
+var yearTotal;
 
 function generate(form) {
 
@@ -27,6 +28,7 @@ function generate(form) {
 	form.style.display = "none";
 
 	finalOutputItems = [];
+	yearTotal = 0;
 
 	getNextDaysTransactions();
 }
@@ -120,6 +122,9 @@ function addTFuelRecieve(amount, date, isCombined) {
 			"Fee Currency": "",
 			"Tag": "staked",
 		};
+		yearTotal += amount;
+		var total_tfuel = document.getElementById('total_tfuel');
+		total_tfuel.innerHTML = "Total TFuel: " + yearTotal.toFixed(8);
 		finalOutputItems.push(finalItem);
 	}
 }
