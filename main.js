@@ -63,7 +63,9 @@ function getNextDaysTransactions() {
 			getNextDaysTransactions();
 		}
 		request.onerror = function () {
-			console.log("Failure to load. Try that page again.");
+			var output_table = document.getElementById('output_form');
+			var rowData = `<tr><td>Failure to load. Try that page again.</td><td></td><td></td></tr>`;
+			output_table.innerHTML = rowData + output_table.innerHTML;
 			getNextDaysTransactions();
 		};
 	} else {
@@ -81,24 +83,36 @@ function getNextDaysTransactions() {
 }
 
 function addDailyRecord(json, date) {
-	// Expected headers
-	// tx_hash,timestamp,tx_type,theta_amount,tfuel_amount,from,to
 	var items = json["body"]
 	// Consolidate all daily transactions into one transaction
 	var totalTFuel = 0
+	var mostRecentDate = date;
 	for (const item in items) {
 		var object = items[item];
 		var type = object["tx_type"];
-		if (type === "Receive" || type === "Coinbase") {
-			var tfuelAmount = parseFloat(object["tfuel_amount"]);
+		var timestamp = new Date(object["timestamp"]);
+		var tfuelAmount = parseFloat(object["tfuel_amount"]);
+		// From this address is staking rewards
+		if (object["from"] === "0x00000") {
+			mostRecentDate = timestamp;
 			totalTFuel += tfuelAmount;
+		} else if (type === "Receive") {
+			addTFuelRecieve(tfuelAmount, timestamp, false);
 		}
 	}
-	if (totalTFuel > 0) {
+	addTFuelRecieve(totalTFuel, mostRecentDate, true);
+}
+
+function addTFuelRecieve(amount, date, isCombined) {
+	if (amount > 0) {
+		var message = isCombined ? "Add Combined Transaction" : "Add Individual Transaction"
+		var output_table = document.getElementById('output_form');
+		var rowData = `<tr><td>${message}</td><td>${timestampString(date)}</td><td>${amount}</td></tr>`;
+		output_table.innerHTML = rowData + output_table.innerHTML;
 		// Fields here are specific output for cointracker.io
 		var finalItem = {
 			"Date": timestampString(date), 
-			"Received Quantity": totalTFuel.toFixed(8),
+			"Received Quantity": amount.toFixed(8),
 			"Received Currency": "TFUEL",
 			"Sent Quantity": "",
 			"Sent Currency": "",
@@ -108,6 +122,15 @@ function addDailyRecord(json, date) {
 		};
 		finalOutputItems.push(finalItem);
 	}
+}
+
+function tableRowForTransaction(object) {
+	// Expected headers
+	// tx_hash,timestamp,tx_type,theta_amount,tfuel_amount,from,to
+	var timestamp = new Date(object["timestamp"]);
+	var tfuelAmount = parseFloat(object["tfuel_amount"]);
+	var rowData = `<tr><td>Real Object</td><td>${timestampString(timestamp)}</td><td>${tfuelAmount}</td></tr>`;
+	return rowData;
 }
 
 function timestampString(date) {
